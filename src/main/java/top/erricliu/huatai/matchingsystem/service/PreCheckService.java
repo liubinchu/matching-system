@@ -2,7 +2,8 @@ package top.erricliu.huatai.matchingsystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.erricliu.huatai.matchingsystem.list.UserList;
+import top.erricliu.huatai.matchingsystem.repo.BondRepo;
+import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 import java.util.Map;
 
@@ -11,9 +12,11 @@ import java.util.Map;
  * @date 2019-10-08 14:12
  **/
 @Service
-public class ParamCheckService {
+public class PreCheckService {
     @Autowired
-    private UserList userList;
+    private UserRepo userRepo;
+    @Autowired
+    private BondRepo bondRepo;
 
     public boolean checkBody(Map<String, Object> body) {
         // 简单 没有判断 类型正确
@@ -24,6 +27,18 @@ public class ParamCheckService {
     }
 
     public boolean existUser(int userId) {
-        return userList.containsKey(userId);
+        return userRepo.containsKey(userId);
+    }
+
+    public boolean userHavingBond(int userId, int bondId) {
+        if (!existUser(userId)) {
+            return false;
+        } else {
+            return userRepo.get(userId).owingBond(bondId);
+        }
+    }
+
+    public boolean existBond(int bondId) {
+        return bondRepo.containsKey(bondId);
     }
 }

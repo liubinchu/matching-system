@@ -3,8 +3,10 @@ package top.erricliu.huatai.matchingsystem.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.erricliu.huatai.matchingsystem.entity.Bond;
-import top.erricliu.huatai.matchingsystem.list.BondList;
-import top.erricliu.huatai.matchingsystem.list.UserList;
+import top.erricliu.huatai.matchingsystem.entity.Responce;
+import top.erricliu.huatai.matchingsystem.repo.BondRepo;
+import top.erricliu.huatai.matchingsystem.repo.TransRepo;
+import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 /**
  * @author liubi
@@ -13,20 +15,23 @@ import top.erricliu.huatai.matchingsystem.list.UserList;
 @Service
 public class AddBondService {
     @Autowired
-    private BondList bondList;
+    private BondRepo bondRepo;
     @Autowired
-    private UserList userList;
+    private UserRepo userRepo;
     @Autowired
-    ParamCheckService paramCheckService;
+    PreCheckService preCheckService;
+    @Autowired
+    TransRepo transRepo;
 
-    public Bond addBond(int quantity, int userId) {
-        if (paramCheckService.existUser(userId)) {
+    public Responce addBond(int quantity, int userId) {
+        if (preCheckService.existUser(userId)) {
             Bond bond = new Bond(quantity);
-            bondList.add(bond);
-            userList.get(userId).buyBond(bond.getId(), bond.getQuantity());
-            return bond;
+            bondRepo.add(bond);
+            userRepo.get(userId).buy(bond.getId(), bond.getQuantity());
+            transRepo.addList(bond.getId());
+            return Responce.build(2202, bond);
         } else {
-            return null;
+            return Responce.build(4201, userId);
         }
 
     }

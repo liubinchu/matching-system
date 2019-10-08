@@ -12,42 +12,74 @@ import java.util.Map;
 @Data
 public class User implements Comparable {
     private static int currentid = 0;
+    int id;
+    int aliveMoney;
+    int frozenMoney;
+    Map<Integer, UserBond> bonds;
 
     public User(int money) {
         this.id = currentid++;
-        this.money = money;
+        this.aliveMoney = money;
+        this.frozenMoney = 0;
         this.bonds = new HashMap<>();
     }
 
-    int id;
-    int money;
-    Map<Integer, Bond> bonds;
-
-    public User buyBond(int bondId, int quantity) {
-        if (this.bonds.containsKey(bondId)) {
-            this.bonds.get(bondId).quantity += quantity;
+    public synchronized boolean freezeMoney(int money) {
+        if (this.aliveMoney < money) {
+            return false;
         } else {
-            this.bonds.put(bondId, new Bond(bondId, quantity));
+            this.aliveMoney -= money;
+            this.frozenMoney += money;
+            return true;
+        }
+    }
+
+    public synchronized boolean freezeBond(int bondId, int quantity) {
+        if (!this.bonds.containsKey(bondId)) {
+            return false;
+        } else {
+            UserBond bond = this.bonds.get(bondId);
+            return bond.freeze(quantity);
+        }
+    }
+
+    public synchronized User buy(int bondId, int quantity, int price) {
+        this.frozenMoney -= (quantity * price);
+        if (this.bonds.containsKey(bondId)) {
+            this.bonds.get(bondId).aliveQuantity += quantity;
+        } else {
+            this.bonds.put(bondId, new UserBond(bondId, quantity));
         }
         return this;
     }
 
-    public User saleBond(int bondId, int quantity) {
-        if (this.bonds.get(bondId).quantity == quantity) {
+    public synchronized User sale(int bondId, int quantity, int price) {
+        this.bonds.get(bondId).frozenQuantity -= quantity;
+        if (this.bonds.get(bondId).getQuantity() == 0) {
+            // 卖完了
             this.bonds.remove(bondId);
-        } else {
-            this.bonds.get(bondId).quantity -= quantity;
         }
+        this.aliveMoney += (quantity * price);
         return this;
+    }
+
+    public boolean owingBond(int boundId) {
+        return this.bonds.containsKey(boundId);
+    }
+
+    public int getTotalMoney() {
+        return aliveMoney + frozenMoney;
     }
 
     @Override
-    public int compareTo(Object o) {
+    public synchronized int compareTo(Object o) {
         User other = (User) o;
         if (other.id != this.id) {
             return this.id - other.id;
-        } else {
-            return this.money - other.money;
+        } else if(this.getTotalMoney()!=other.getTotalMoney()){
+            return this.getTotalMoney() - other.getTotalMoney();
+        }else {
+            return this.aliveMoney - other.aliveMoney;
         }
     }
 }

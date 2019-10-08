@@ -1,18 +1,18 @@
-package top.erricliu.huatai.matchingsystem.list;
+package top.erricliu.huatai.matchingsystem.repo;
 
 import org.springframework.stereotype.Component;
 import top.erricliu.huatai.matchingsystem.entity.User;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author liubi
  * @date 2019-10-08 10:32
  **/
 @Component
-public class UserList {
-    private Map<Integer, User> userList = new HashMap<>();
+public class UserRepo {
+    private Map<Integer, User> userList = new ConcurrentHashMap<>();
 
     public boolean containsKey(int userId) {
         return userList.containsKey(userId);

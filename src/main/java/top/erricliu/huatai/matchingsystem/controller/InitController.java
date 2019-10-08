@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.erricliu.huatai.matchingsystem.entity.Bond;
-import top.erricliu.huatai.matchingsystem.entity.User;
+import top.erricliu.huatai.matchingsystem.entity.Responce;
 import top.erricliu.huatai.matchingsystem.service.AddBondService;
 import top.erricliu.huatai.matchingsystem.service.AddUserService;
 
@@ -25,14 +24,12 @@ public class InitController {
     private AddUserService addUserService;
 
     @PostMapping("/addUser")
-    public User addUser(@RequestParam int money) {
-        User user = addUserService.addUser(money);
-        log.debug(user);
-        return user;
+    public Responce addUser(@RequestParam int money) {
+        return addUserService.addUser(money);
     }
 
     @PostMapping("/addBond")
-    public Bond addBond(@RequestParam int quantity, @RequestParam int userId) {
+    public Responce addBond(@RequestParam int quantity, @RequestParam int userId) {
         return addBondService.addBond(quantity, userId);
     }
 }

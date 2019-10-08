@@ -3,8 +3,9 @@ package top.erricliu.huatai.matchingsystem.service;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.erricliu.huatai.matchingsystem.entity.Responce;
 import top.erricliu.huatai.matchingsystem.entity.User;
-import top.erricliu.huatai.matchingsystem.list.UserList;
+import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 /**
  * @author liubi
@@ -14,10 +15,11 @@ import top.erricliu.huatai.matchingsystem.list.UserList;
 @Log4j2
 public class AddUserService {
     @Autowired
-    private UserList userList;
+    private UserRepo userRepo;
 
-    public User addUser(int money) {
+    public Responce addUser(int money) {
         User user = new User(money);
-        return userList.add(user);
+        userRepo.add(user);
+        return Responce.build(2201, user);
     }
 }
