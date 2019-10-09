@@ -18,6 +18,12 @@ public class PreCheckService {
     @Autowired
     private BondRepo bondRepo;
 
+    public boolean checkMoney(int money){
+        return money>=0;
+    }
+    public boolean checkQuantity(int quantity){
+        return quantity>=0;
+    }
     public boolean checkBody(Map<String, Object> body) {
         // 简单 没有判断 类型正确
         return body.containsKey("userId")

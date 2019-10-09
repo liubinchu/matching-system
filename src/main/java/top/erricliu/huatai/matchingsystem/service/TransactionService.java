@@ -63,7 +63,7 @@ public class TransactionService {
                 return Responce.build(4104, new int[]{userId, quantity * price});
             }
         } else {
-            // 卖交易只冻结债券
+            //卖交易只冻结债券
             if (!user.freezeBond(bondId, quantity)) {
                 return Responce.build(4105, new int[]{userId, bondId, quantity});
             }
