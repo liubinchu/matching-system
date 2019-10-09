@@ -1,12 +1,14 @@
 package top.erricliu.huatai.matchingsystem.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author liubi
  * @date 2019-10-08 10:31
  **/
 @Data
+
 public class Bond implements Comparable {
     private static int currentid = 0;
     int id;

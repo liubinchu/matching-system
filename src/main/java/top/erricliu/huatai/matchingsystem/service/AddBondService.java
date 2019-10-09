@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import top.erricliu.huatai.matchingsystem.entity.Bond;
 import top.erricliu.huatai.matchingsystem.entity.Responce;
 import top.erricliu.huatai.matchingsystem.repo.BondRepo;
-import top.erricliu.huatai.matchingsystem.repo.TransRepo;
+import top.erricliu.huatai.matchingsystem.repo.BillRepo;
 import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 /**
@@ -21,18 +21,17 @@ public class AddBondService {
     @Autowired
     PreCheckService preCheckService;
     @Autowired
-    TransRepo transRepo;
+    BillRepo billRepo;
 
     public Responce addBond(int quantity, int userId) {
         if (preCheckService.existUser(userId)) {
             Bond bond = new Bond(quantity);
             bondRepo.add(bond);
             userRepo.get(userId).addBond(bond.getId(), bond.getQuantity());
-            transRepo.addList(bond.getId());
+            billRepo.addList(bond.getId());
             return Responce.build(2202, bond);
         } else {
             return Responce.build(4201, userId);
         }
-
     }
 }

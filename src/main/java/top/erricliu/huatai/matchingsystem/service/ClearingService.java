@@ -9,7 +9,7 @@ import top.erricliu.huatai.matchingsystem.entity.billList.SaleBillList;
 import top.erricliu.huatai.matchingsystem.entity.transaction.BuyBill;
 import top.erricliu.huatai.matchingsystem.entity.transaction.SaleBill;
 import top.erricliu.huatai.matchingsystem.entity.transaction.Transaction;
-import top.erricliu.huatai.matchingsystem.repo.TransRepo;
+import top.erricliu.huatai.matchingsystem.repo.BillRepo;
 import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 import java.sql.Timestamp;
@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 @Log4j2
 public class ClearingService {
     @Autowired
-    private TransRepo transRepo;
+    private BillRepo billRepo;
     @Autowired
     private UserRepo userRepo;
 

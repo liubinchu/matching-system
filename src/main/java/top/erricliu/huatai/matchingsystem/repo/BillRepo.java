@@ -12,7 +12,7 @@ import java.util.Map;
  * @date 2019-10-08 21:48
  **/
 @Component
-public class TransRepo {
+public class BillRepo {
     Map<Integer, BuyBillList> buyRepo = new HashMap<>();
     Map<Integer, SaleBillList> saleRepo = new HashMap<>();
 

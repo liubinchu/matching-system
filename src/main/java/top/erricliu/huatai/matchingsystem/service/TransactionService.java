@@ -9,7 +9,7 @@ import top.erricliu.huatai.matchingsystem.entity.transaction.BillType;
 import top.erricliu.huatai.matchingsystem.entity.transaction.BuyBill;
 import top.erricliu.huatai.matchingsystem.entity.transaction.SaleBill;
 import top.erricliu.huatai.matchingsystem.repo.BondRepo;
-import top.erricliu.huatai.matchingsystem.repo.TransRepo;
+import top.erricliu.huatai.matchingsystem.repo.BillRepo;
 import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 import java.util.Map;
@@ -28,7 +28,7 @@ public class TransactionService {
     @Autowired
     private UserRepo userRepo;
     @Autowired
-    private TransRepo transRepo;
+    private BillRepo billRepo;
     @Autowired
     private MatchingService matchingService;
 

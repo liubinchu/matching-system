@@ -1,6 +1,7 @@
 package top.erricliu.huatai.matchingsystem.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
  * @date 2019-10-08 10:31
  **/
 @Data
+
 public class User implements Comparable {
     private static int currentid = 0;
     int id;

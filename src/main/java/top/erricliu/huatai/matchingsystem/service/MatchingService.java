@@ -8,7 +8,7 @@ import top.erricliu.huatai.matchingsystem.entity.transaction.Bill;
 import top.erricliu.huatai.matchingsystem.entity.transaction.BillType;
 import top.erricliu.huatai.matchingsystem.entity.transaction.BuyBill;
 import top.erricliu.huatai.matchingsystem.entity.transaction.SaleBill;
-import top.erricliu.huatai.matchingsystem.repo.TransRepo;
+import top.erricliu.huatai.matchingsystem.repo.BillRepo;
 import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 /**
@@ -18,7 +18,7 @@ import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 @Service
 public class MatchingService {
     @Autowired
-    private TransRepo transRepo;
+    private BillRepo billRepo;
     @Autowired
     private UserRepo userRepo;
     @Autowired
@@ -33,8 +33,8 @@ public class MatchingService {
     }
 
     private void activateByBuy(BuyBill buyBill) {
-        SaleBillList saleList = transRepo.getSaleList(buyBill.getBoundId());
-        BuyBillList buyList = transRepo.getBuyList(buyBill.getBoundId());
+        SaleBillList saleList = billRepo.getSaleList(buyBill.getBoundId());
+        BuyBillList buyList = billRepo.getBuyList(buyBill.getBoundId());
         while (buyBill.getQuantity() != 0) {
             if (saleList.isEmpty()) {
                 buyList.offerBill(buyBill);
@@ -53,8 +53,8 @@ public class MatchingService {
     }
 
     private void activateBySale(SaleBill saleBill) {
-        SaleBillList saleList = transRepo.getSaleList(saleBill.getBoundId());
-        BuyBillList buyList = transRepo.getBuyList(saleBill.getBoundId());
+        SaleBillList saleList = billRepo.getSaleList(saleBill.getBoundId());
+        BuyBillList buyList = billRepo.getBuyList(saleBill.getBoundId());
         while (saleBill.getQuantity() != 0) {
             if (buyList.isEmpty()) {
                 saleList.offerBill(saleBill);

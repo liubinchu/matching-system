@@ -1,12 +1,14 @@
 package top.erricliu.huatai.matchingsystem.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author liubi
  * @date 2019-10-08 19:43
  **/
 @Data
+
 public class Responce {
     int code;
     String msg;
@@ -37,6 +39,11 @@ public class Responce {
                 return new Responce(code, "添加债券成功", data);
             case 4201:
                 return new Responce(code, "非法UserId", data);
+
+            case 2301:
+                return new Responce(code, "状态查询成功", data);
+            case 4301:
+                return new Responce(code, "状态查询失败", data);
 
             default:
                 return new Responce(5001, "未定义状态码", code);
