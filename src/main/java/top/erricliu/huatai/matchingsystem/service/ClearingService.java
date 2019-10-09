@@ -75,7 +75,6 @@ public class ClearingService {
         //log
         log.info("transaction deal:" + transaction.toJson());
         boolean cacheSuccess=sendMessageAndSave(transaction.toJson());
-
     }
 
 
