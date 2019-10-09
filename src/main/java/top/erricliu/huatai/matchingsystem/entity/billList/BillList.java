@@ -13,6 +13,11 @@ import java.util.concurrent.PriorityBlockingQueue;
  **/
 public class BillList {
     int bondid;
+
+    public Queue<Bill> getTransList() {
+        return transList;
+    }
+
     Queue<Bill> transList;
 
     public BillList(int bondid) {
@@ -47,6 +52,9 @@ public class BillList {
     public Bill pollBill() {
         return this.transList.poll();
     }
+    public boolean removeBill(Bill bill) {
+        return this.transList.remove(bill);
+    }
 
     public static void main(String[] args) {
         BuyBillList list1 = new BuyBillList(0);
@@ -54,13 +62,21 @@ public class BillList {
         BuyBill transaction2 = new BuyBill(0, 0, 20, 10);
         list1.offerBill(transaction1);
         list1.offerBill(transaction2);
-        System.out.println(list1);
+/*        for(Bill buyBill: list1.transList){
+            System.out.println(buyBill);
+        }*/
+        list1.removeBill(transaction1);
+        for(Bill buyBill: list1.transList){
+            System.out.println(buyBill);
+        }
 
         SaleBillList list2 = new SaleBillList(0);
         SaleBill transaction3 = new SaleBill(0, 0, 10, 10);
         SaleBill transaction4 = new SaleBill(0, 0, 20, 10);
         list2.offerBill(transaction3);
         list2.offerBill(transaction4);
-        System.out.println(list2);
+        for(Bill saleBill: list2.transList){
+            System.out.println(saleBill);
+        }
     }
 }
