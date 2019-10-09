@@ -20,10 +20,8 @@ public class Bill {
     int quantity;
     Timestamp initTime;
     // 初始创建时间
-
     Timestamp currentTime;
     // 部分交易后, 剩余创建交易时间
-
     public Bill(int userId, int boundId, BillType tradeType, int price, int quantity) {
         this.userId = userId;
         this.boundId = boundId;

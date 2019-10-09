@@ -28,50 +28,56 @@ public class ClearingService {
     @Autowired
     private EnduranceService enduranceService;
 
-    public synchronized void clearBuy(BuyBill buyBill, SaleBillList saleList, int[] pricing) {
+    public synchronized void clearBuy(BuyBill buyBill, SaleBillList saleList, Object[] pricing) {
         // t1 未加入repo ,t2 已经加入repo
-        // 成交价格为 先进入系统的价格 int[0]
-        // 成交数量为二者较小值 int[1]
-        SaleBill saleBill = (SaleBill) saleList.peekBill();
+        // 成交价格为 先进入系统的价格 Object[0]
+        // 成交数量为二者较小值 Object[1]
+        // buyBill Object[2]
+        // saleBill Object[3]
+        SaleBill saleBill = (SaleBill) pricing[3];
         Timestamp timestamp = new java.sql.Timestamp(System.currentTimeMillis());
         User buyer = userRepo.get(buyBill.getUserId());
         User seller = userRepo.get(saleBill.getUserId());
         // 生成交易
-        Transaction transaction = new Transaction(buyer.getId(), seller.getId(), buyBill.getBoundId(), pricing[1], pricing[0]);
-
-        buyBill.trade(pricing[1], timestamp);
-        saleBill.trade(pricing[1], timestamp);
+        Transaction transaction = new Transaction(buyer.getId(), seller.getId(), buyBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
+        buyBill.trade((int)pricing[1], timestamp);
+        saleBill.trade((int)pricing[1], timestamp);
         if (saleBill.getQuantity() == 0) {
-            saleList.pollBill();
+            saleList.removeBill(saleBill);
         }
-        buyer.buy(buyBill.getBoundId(), pricing[1], pricing[0]);
-        seller.sale(saleBill.getBoundId(), pricing[1], pricing[0]);
+        buyer.buy(buyBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
+        seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
         enduranceService.putClearingInfo(transaction.toJson());
     }
 
-    public synchronized void clearSale(SaleBill saleBill, BuyBillList buyList, int[] pricing) {
+
+
+    public synchronized void clearSale(SaleBill saleBill, BuyBillList buyList, Object[] pricing) {
         // t1 未加入repo ,t2 已经加入repo
-        // 成交价格为 先进入系统的价格 int[0]
-        // 成交数量为二者较小值 int[1]
-        BuyBill buyBill = (BuyBill) buyList.peekBill();
+        // 成交价格为 先进入系统的价格 Object[0]
+        // 成交数量为二者较小值 Object[1]
+        // buyBill Object[2]
+        // saleBill Object[3]
+        BuyBill buyBill = (BuyBill) pricing[2];
         Timestamp timestamp = new java.sql.Timestamp(System.currentTimeMillis());
         User buyer = userRepo.get(buyBill.getUserId());
         User seller = userRepo.get(saleBill.getUserId());
         // 生成交易
-        Transaction transaction = new Transaction(buyer.getId(), seller.getId(), buyBill.getBoundId(), pricing[1], pricing[0]);
+        Transaction transaction = new Transaction(buyer.getId(), seller.getId(), buyBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
 
-        buyBill.trade(pricing[1], timestamp);
-        saleBill.trade(pricing[1], timestamp);
+        buyBill.trade((int)pricing[1], timestamp);
+        saleBill.trade((int)pricing[1], timestamp);
         if (buyBill.getQuantity() == 0) {
-            buyList.pollBill();
+            buyList.removeBill(buyBill);
         }
-        buyer.buy(buyBill.getBoundId(), pricing[1], pricing[0]);
-        seller.sale(saleBill.getBoundId(), pricing[1], pricing[0]);
+        buyer.buy(buyBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
+        seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
-        enduranceService.putClearingInfo(transaction.toJson());
+		enduranceService.putClearingInfo(transaction.toJson());
+
     }
 
 
