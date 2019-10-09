@@ -1,6 +1,7 @@
 package top.erricliu.huatai.matchingsystem.entity;
 
 import lombok.Data;
+import top.erricliu.huatai.matchingsystem.Util.GsonUtil;
 
 /**
  * @author liubi
@@ -33,5 +34,10 @@ public class UserBond extends Bond {
     @Override
     public int getQuantity() {
         return aliveQuantity + frozenQuantity;
+    }
+
+    @Override
+    public UserBond fromJson(String data) {
+        return GsonUtil.getGson().fromJson(data, UserBond.class);
     }
 }

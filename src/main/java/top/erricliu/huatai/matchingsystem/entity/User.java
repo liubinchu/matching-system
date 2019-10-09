@@ -1,7 +1,8 @@
 package top.erricliu.huatai.matchingsystem.entity;
 
 import lombok.Data;
-import lombok.ToString;
+import top.erricliu.huatai.matchingsystem.Util.GsonUtil;
+import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,5 +93,13 @@ public class User implements Comparable {
         }else {
             return this.aliveMoney - other.aliveMoney;
         }
+    }
+
+    public String toJson() {
+        return GsonUtil.getGson().toJson(this);
+    }
+
+    public UserRepo fromJson(String data) {
+        return GsonUtil.getGson().fromJson(data, UserRepo.class);
     }
 }

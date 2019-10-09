@@ -1,6 +1,8 @@
 package top.erricliu.huatai.matchingsystem.entity.transaction;
 
 import lombok.Data;
+import top.erricliu.huatai.matchingsystem.Util.GsonUtil;
+import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 import java.sql.Timestamp;
 
@@ -53,6 +55,13 @@ public class Bill {
         return this;
     }
 
+    public String toJson() {
+        return GsonUtil.getGson().toJson(this);
+    }
+
+    public Bill fromJson(String data) {
+        return GsonUtil.getGson().fromJson(data, Bill.class);
+    }
 
     public static void main(String[] args) {
         BuyBill transaction1 = new BuyBill(0, 0, 10, 10);

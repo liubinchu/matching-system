@@ -1,5 +1,6 @@
 package top.erricliu.huatai.matchingsystem.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.erricliu.huatai.matchingsystem.entity.Responce;
@@ -20,6 +21,7 @@ import java.util.Map;
  **/
 
 @Service
+@Log4j2
 public class TransactionService {
     @Autowired
     private PreCheckService preCheckService;
@@ -72,8 +74,10 @@ public class TransactionService {
         Bill bill;
         if (billType.equals(BillType.BUY)) {
             bill = new BuyBill(userId, bondId, price, quantity);
+            log.info("bill: "+bill.toJson());
         } else {
             bill = new SaleBill(userId, bondId, price, quantity);
+            log.info("bill: "+bill.toJson());
         }
         matchingService.activate(bill);
         if (billType.equals(BillType.BUY)) {

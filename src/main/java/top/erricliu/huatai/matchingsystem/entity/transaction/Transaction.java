@@ -1,6 +1,5 @@
 package top.erricliu.huatai.matchingsystem.entity.transaction;
 
-import com.google.gson.Gson;
 import lombok.Data;
 import top.erricliu.huatai.matchingsystem.Util.GsonUtil;
 
@@ -12,8 +11,6 @@ import java.sql.Timestamp;
  **/
 @Data
 public class Transaction {
-    private static Gson gson = GsonUtil.getGson();
-
     int buyerId;
     int sellerId;
     int bondId;
@@ -31,10 +28,10 @@ public class Transaction {
     }
 
     public String toJson() {
-        return gson.toJson(this);
+        return GsonUtil.getGson().toJson(this);
     }
 
     public Transaction fromJson(String data) {
-        return gson.fromJson(data, Transaction.class);
+        return GsonUtil.getGson().fromJson(data, Transaction.class);
     }
 }

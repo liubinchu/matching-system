@@ -1,7 +1,8 @@
 package top.erricliu.huatai.matchingsystem.entity;
 
 import lombok.Data;
-import lombok.ToString;
+import top.erricliu.huatai.matchingsystem.Util.GsonUtil;
+import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 
 /**
  * @author liubi
@@ -32,5 +33,13 @@ public class Bond implements Comparable {
         } else {
             return this.quantity - other.quantity;
         }
+    }
+
+    public String toJson() {
+        return GsonUtil.getGson().toJson(this);
+    }
+
+    public Bond fromJson(String data) {
+        return GsonUtil.getGson().fromJson(data, Bond.class);
     }
 }

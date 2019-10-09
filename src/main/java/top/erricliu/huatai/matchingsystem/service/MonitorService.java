@@ -19,7 +19,19 @@ public class MonitorService {
     private UserRepo userRepo;
     @Autowired
     BillRepo billRepo;
+
     public Responce userRepo(){
-        return Responce.build()
+        Responce res = Responce.build(2301,userRepo.toString());
+        return res;
+    }
+
+    public Responce bondRepo(){
+        Responce res = Responce.build(2301,bondRepo.toString());
+        return res;
+    }
+
+    public Responce billRepo(){
+        Responce res = Responce.build(2301,billRepo.toString());
+        return res;
     }
 }

@@ -20,6 +20,7 @@ public class AddUserService {
     public Responce addUser(int money) {
         User user = new User(money);
         userRepo.add(user);
+        log.info("user: "+user.toJson());
         return Responce.build(2201, user);
     }
 }

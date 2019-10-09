@@ -30,7 +30,7 @@ public class MonitorController {
     }
 
     @GetMapping("/bondRepo")
-    public Responce billRepo() {
+    public Responce bondRepo() {
         return monitorService.bondRepo();
     }
 }
