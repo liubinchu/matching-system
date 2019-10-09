@@ -17,11 +17,11 @@ import top.erricliu.huatai.matchingsystem.service.PersistenceService;
 @Configuration
     @AutoConfigureAfter({PersistenceService.class})
     public class SubscriberConfig {
-
         // 消息监听适配器，注入接受消息方法，输入方法名字 反射方法
         @Bean
         public MessageListenerAdapter getMessageListenerAdapter(PersistenceService persistenceService) {
-            return new MessageListenerAdapter(persistenceService, "messageGetAndEndurance"); //当没有继承MessageListener时需要写方法名字
+            return new MessageListenerAdapter(persistenceService, "messageGetAndPersistence");
+            //当没有继承MessageListener时需要写方法名字
         }
 
         // 创建消息监听容器

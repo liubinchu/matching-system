@@ -6,8 +6,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import top.erricliu.huatai.matchingsystem.mapper.TransactionMapper;
 import top.erricliu.huatai.matchingsystem.entity.transaction.Transaction;
+import top.erricliu.huatai.matchingsystem.mapper.TransactionMapper;
 
 /**
  * @author liubi
@@ -19,23 +19,22 @@ import top.erricliu.huatai.matchingsystem.entity.transaction.Transaction;
 @EnableAsync
 public class PersistenceService {
 
- @Autowired
- private StringRedisTemplate redisTemplate;
- @Autowired
- private TransactionMapper transactionMapper;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @Autowired
+    private TransactionMapper transactionMapper;
 
 
- @Async("taskExecutor")
- public synchronized  void messageGetAndEndurance(String content) {
-  try {
-   Transaction transaction=new Transaction();
-   transaction=transaction.fromJson(content);
-   transactionMapper.install(transaction);
-   log.info("get transaction from cache and endurance succeed: " + content);
-  } catch (Exception e) {
-   e.printStackTrace();
-   log.error("save fail:" + content);
-  }
- }
-
+    @Async("taskExecutor")
+    public void messageGetAndPersistence(String content) {
+        try {
+            Transaction transaction = new Transaction();
+            transaction = transaction.fromJson(content);
+            transactionMapper.install(transaction);
+            log.info("get transaction from cache and persist succeed: " + content);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("save fail:" + content);
+        }
+    }
 }
