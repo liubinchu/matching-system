@@ -15,12 +15,18 @@ import top.erricliu.huatai.matchingsystem.repo.UserRepo;
 @Log4j2
 public class AddUserService {
     @Autowired
+    private PreCheckService preCheckService;
+    @Autowired
     private UserRepo userRepo;
 
     public Responce addUser(int money) {
-        User user = new User(money);
-        userRepo.add(user);
-        log.info("user: "+user.toJson());
-        return Responce.build(2201, user);
+        if (preCheckService.checkMoney(money)){
+            User user = new User(money);
+            userRepo.add(user);
+            log.info("user: "+user.toJson());
+            return Responce.build(2201, user);
+        }else {
+            return Responce.build(4202,"param: money="+money);
+        }
     }
 }

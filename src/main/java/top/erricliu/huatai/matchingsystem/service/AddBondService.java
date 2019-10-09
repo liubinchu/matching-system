@@ -26,15 +26,20 @@ public class AddBondService {
     BillRepo billRepo;
 
     public Responce addBond(int quantity, int userId) {
-        if (preCheckService.existUser(userId)) {
-            Bond bond = new Bond(quantity);
-            bondRepo.add(bond);
-            userRepo.get(userId).addBond(bond.getId(), bond.getQuantity());
-            billRepo.addList(bond.getId());
-            log.info("bond: "+bond.toJson()+" userId: "+userId);
-            return Responce.build(2202, bond);
-        } else {
-            return Responce.build(4201, userId);
+        if(preCheckService.checkQuantity(quantity)){
+            if (preCheckService.existUser(userId)) {
+                Bond bond = new Bond(quantity);
+                bondRepo.add(bond);
+                userRepo.get(userId).addBond(bond.getId(), bond.getQuantity());
+                billRepo.addList(bond.getId());
+                log.info("bond: "+bond.toJson()+" userId: "+userId);
+                return Responce.build(2202, bond);
+            } else {
+                return Responce.build(4201, userId);
+            }
+        }
+        else{
+            return Responce.build(4202, "param: quantity="+quantity);
         }
     }
 }

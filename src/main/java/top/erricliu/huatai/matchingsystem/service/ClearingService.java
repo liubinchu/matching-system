@@ -2,6 +2,7 @@ package top.erricliu.huatai.matchingsystem.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
 import top.erricliu.huatai.matchingsystem.entity.User;
 import top.erricliu.huatai.matchingsystem.entity.billList.BuyBillList;
@@ -38,6 +39,7 @@ public class ClearingService {
         User seller = userRepo.get(saleBill.getUserId());
         // 生成交易
         Transaction transaction = new Transaction(buyer.getId(), seller.getId(), buyBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
+
         buyBill.trade((int)pricing[1], timestamp);
         saleBill.trade((int)pricing[1], timestamp);
         if (saleBill.getQuantity() == 0) {
@@ -84,6 +86,11 @@ public class ClearingService {
         // 生成交易
         Transaction transaction = new Transaction(buyer.getId(), seller.getId(), buyBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
 
+        if(!clearPreCheck(buyer,seller,transaction)){
+            //log.error("error transaction, Transaction:"+transaction+);
+            return;
+           // return false;
+        }
         buyBill.trade((int)pricing[1], timestamp);
         saleBill.trade((int)pricing[1], timestamp);
         if (buyBill.getQuantity() == 0) {
@@ -93,6 +100,18 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
+        return;
+        //return true;
+    }
+
+    private boolean clearPreCheck(User buyer, User seller,Transaction transaction){
+        if (buyer.getFrozenMoney()<transaction.getQuantity()*transaction.getDealingPrice()){
+            return false;
+        }
+        if(seller.getBonds().get(transaction.getBondId()).getFrozenQuantity()<transaction.getQuantity()){
+            return false;
+        }
+        return true;
     }
 
 
