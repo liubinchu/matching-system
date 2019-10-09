@@ -14,22 +14,18 @@ import top.erricliu.huatai.matchingsystem.service.EnduranceService;
     @AutoConfigureAfter({EnduranceService.class})
     public class SubscriberConfig {
 
-        /**
-         * 消息监听适配器，注入接受消息方法，输入方法名字 反射方法
-         */
+        // 消息监听适配器，注入接受消息方法，输入方法名字 反射方法
         @Bean
         public MessageListenerAdapter getMessageListenerAdapter(EnduranceService enduranceService) {
             return new MessageListenerAdapter(enduranceService, "messageGetAndEndurance"); //当没有继承MessageListener时需要写方法名字
         }
 
-        /**
-         * 创建消息监听容器
-         */
+        // 创建消息监听容器
         @Bean
         public RedisMessageListenerContainer getRedisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, MessageListenerAdapter messageListenerAdapter) {
             RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
             redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
-            redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new PatternTopic("ClearingInfo"));
+            redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new PatternTopic("TransactionMsgCache"));
             return redisMessageListenerContainer;
         }
 

@@ -30,21 +30,24 @@ public class ClearingService {
     private BillRepo billRepo;
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private StringRedisTemplate redisTemplate;
+    //static int countCache=0;
 
-    public void sendMessageAndSave(String info) {
+    public boolean sendMessageAndSave(String info) {
         try {
-            redisTemplate.opsForList().rightPush("ClearingInfoCache",info);
-            redisTemplate.convertAndSend("ClearingInfo", info);
-            log.info("发送mq消息" + info+"成功");
-
-
+            /**
+            redisTemplate.opsForList().rightPush("TransactionCache",info);
+            if(countCache>5000)redisTemplate.opsForList().leftPop("TransactionCache");
+            else countCache++;
+             **/
+            redisTemplate.convertAndSend("TransactionMsgCache", info);
+            log.info("Cache succeed: " + info);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            log.info("发送mq消息" + info+"失败");
-
+            log.error("Cache fail: " + info);
+            return false;
         }
     }
 
@@ -71,7 +74,7 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
-        sendMessageAndSave(transaction.toJson());
+        boolean cacheSuccess=sendMessageAndSave(transaction.toJson());
 
     }
 
@@ -104,7 +107,7 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
-        sendMessageAndSave(transaction.toJson());
+        boolean cacheSuccess=sendMessageAndSave(transaction.toJson());
         return;
         //return true;
     }
