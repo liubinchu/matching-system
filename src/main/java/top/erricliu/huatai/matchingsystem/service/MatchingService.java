@@ -2,14 +2,14 @@ package top.erricliu.huatai.matchingsystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.erricliu.huatai.matchingsystem.entity.billList.BillList;
 import top.erricliu.huatai.matchingsystem.entity.billList.BuyBillList;
 import top.erricliu.huatai.matchingsystem.entity.billList.SaleBillList;
-import top.erricliu.huatai.matchingsystem.entity.transaction.Bill;
-import top.erricliu.huatai.matchingsystem.entity.transaction.BillType;
-import top.erricliu.huatai.matchingsystem.entity.transaction.BuyBill;
-import top.erricliu.huatai.matchingsystem.entity.transaction.SaleBill;
+import top.erricliu.huatai.matchingsystem.entity.transaction.*;
 import top.erricliu.huatai.matchingsystem.repo.BillRepo;
 import top.erricliu.huatai.matchingsystem.repo.UserRepo;
+
+import java.util.Queue;
 
 /**
  * @author liubi
@@ -26,13 +26,13 @@ public class MatchingService {
 
     public void activate(Bill bill) {
         if (bill.getTradeType().equals(BillType.BUY)) {
-            activateByBuy((BuyBill) bill);
+          activateByBuy((BuyBill) bill);
         } else {
             activateBySale((SaleBill) bill);
         }
     }
 
-    private void activateByBuy(BuyBill buyBill) {
+/*   private void activateByBuy(BuyBill buyBill) {
         SaleBillList saleList = billRepo.getSaleList(buyBill.getBoundId());
         BuyBillList buyList = billRepo.getBuyList(buyBill.getBoundId());
         while (buyBill.getQuantity() != 0) {
@@ -50,31 +50,67 @@ public class MatchingService {
                 }
             }
         }
+    }*/
+
+    private void activateByBuy(BuyBill buyBill) {
+        SaleBillList saleList = billRepo.getSaleList(buyBill.getBoundId());
+        BuyBillList buyList = billRepo.getBuyList(buyBill.getBoundId());
+        while (buyBill.getQuantity() != 0) {
+            Object[] res = pricing(buyBill, saleList);
+            if(res==null){
+                buyList.offerBill(buyBill);
+                return;
+            }
+            clearingService.clearBuy(buyBill, saleList, res);
+        }
     }
 
     private void activateBySale(SaleBill saleBill) {
         SaleBillList saleList = billRepo.getSaleList(saleBill.getBoundId());
         BuyBillList buyList = billRepo.getBuyList(saleBill.getBoundId());
         while (saleBill.getQuantity() != 0) {
-            if (buyList.isEmpty()) {
+            Object[] res = pricing(saleBill, buyList);
+            if(res==null){
                 saleList.offerBill(saleBill);
                 return;
-            } else {
-                BuyBill buyBill = (BuyBill) buyList.peekBill();
-                int[] res = pricing(buyBill, saleBill);
-                if (res == null) {
-                    saleList.offerBill(saleBill);
-                    return;
-                } else {
-                    clearingService.clearSale(saleBill, buyList, res);
-                }
             }
+            clearingService.clearSale(saleBill, buyList, res);
         }
     }
 
-    private int[] pricing(BuyBill buyBill, SaleBill saleBill) {
-        // 成交价格为 先进入系统的价格 int[0]
-        // 成交数量为二者较小值 int[1]
+    private Object[] pricing(Bill bill, BillList billList){
+        // 成交价格为 先进入系统的价格 Object[0]
+        // 成交数量为二者较小值 Object[1]
+        // buyBill Object[2]
+        // saleBill Object[3]
+        boolean isBuy  = bill.getTradeType().equals(BillType.BUY);
+        BuyBill buyBill = null;
+        SaleBill saleBill = null;
+        if (isBuy){
+            buyBill = (BuyBill) bill;
+        }else {
+            saleBill = (SaleBill) bill;
+        }
+        Queue<Bill> billQueue = billList.getTransList();
+        for(Bill tmp: billQueue){
+            if (isBuy){
+                if(buyBill.getPrice()>=tmp.getPrice()){
+                    saleBill = (SaleBill) tmp;
+                    break;
+                }
+            }else {
+                if(saleBill.getPrice()<=tmp.getPrice()){
+                    buyBill = (BuyBill) tmp;
+                    break;
+                }
+            }
+        }
+        if(isBuy&&saleBill==null){
+            return null;
+        }
+        if((!isBuy)&&buyBill==null){
+            return null;
+        }
         if (buyBill.getPrice() < saleBill.getPrice()) {
             // 无法撮合
             return null;
@@ -94,8 +130,7 @@ public class MatchingService {
                 }
             }
             int quantity = Math.min(buyBill.getQuantity(), saleBill.getQuantity());
-            return new int[]{price, quantity};
+            return new Object[]{price, quantity,buyBill,saleBill};
         }
     }
-
 }
