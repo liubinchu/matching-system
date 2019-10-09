@@ -32,26 +32,6 @@ public class MatchingService {
         }
     }
 
-/*   private void activateByBuy(BuyBill buyBill) {
-        SaleBillList saleList = billRepo.getSaleList(buyBill.getBoundId());
-        BuyBillList buyList = billRepo.getBuyList(buyBill.getBoundId());
-        while (buyBill.getQuantity() != 0) {
-            if (saleList.isEmpty()) {
-                buyList.offerBill(buyBill);
-                return;
-            } else {
-                SaleBill salePeek = (SaleBill) saleList.peekBill();
-                int[] res = pricing(buyBill, salePeek);
-                if (res == null) {
-                    buyList.offerBill(buyBill);
-                    return;
-                } else {
-                    clearingService.clearBuy(buyBill, saleList, res);
-                }
-            }
-        }
-    }*/
-
     private void activateByBuy(BuyBill buyBill) {
         SaleBillList saleList = billRepo.getSaleList(buyBill.getBoundId());
         BuyBillList buyList = billRepo.getBuyList(buyBill.getBoundId());

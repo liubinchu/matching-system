@@ -39,6 +39,8 @@ public class Responce {
                 return new Responce(code, "添加债券成功", data);
             case 4201:
                 return new Responce(code, "非法UserId", data);
+            case 4202:
+                return new Responce(code, "非法参数", data);
 
             case 2301:
                 return new Responce(code, "状态查询成功", data);
