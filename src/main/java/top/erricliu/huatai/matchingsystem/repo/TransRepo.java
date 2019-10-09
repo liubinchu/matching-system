@@ -1,8 +1,8 @@
 package top.erricliu.huatai.matchingsystem.repo;
 
 import org.springframework.stereotype.Component;
-import top.erricliu.huatai.matchingsystem.entity.transList.BuyTransList;
-import top.erricliu.huatai.matchingsystem.entity.transList.SaleTransList;
+import top.erricliu.huatai.matchingsystem.entity.billList.BuyBillList;
+import top.erricliu.huatai.matchingsystem.entity.billList.SaleBillList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,19 +13,19 @@ import java.util.Map;
  **/
 @Component
 public class TransRepo {
-    Map<Integer, BuyTransList> buyRepo = new HashMap<>();
-    Map<Integer, SaleTransList> saleRepo = new HashMap<>();
+    Map<Integer, BuyBillList> buyRepo = new HashMap<>();
+    Map<Integer, SaleBillList> saleRepo = new HashMap<>();
 
     public void addList(int bondId) {
-        buyRepo.put(bondId, new BuyTransList(bondId));
-        saleRepo.put(bondId, new SaleTransList(bondId));
+        buyRepo.put(bondId, new BuyBillList(bondId));
+        saleRepo.put(bondId, new SaleBillList(bondId));
     }
 
-    public SaleTransList getSaleList(int bondId) {
+    public SaleBillList getSaleList(int bondId) {
         return saleRepo.get(bondId);
     }
 
-    public BuyTransList getBuyList(int bondId) {
+    public BuyBillList getBuyList(int bondId) {
         return buyRepo.get(bondId);
     }
 }

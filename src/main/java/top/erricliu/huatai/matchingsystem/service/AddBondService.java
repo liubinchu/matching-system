@@ -27,7 +27,7 @@ public class AddBondService {
         if (preCheckService.existUser(userId)) {
             Bond bond = new Bond(quantity);
             bondRepo.add(bond);
-            userRepo.get(userId).buy(bond.getId(), bond.getQuantity());
+            userRepo.get(userId).addBond(bond.getId(), bond.getQuantity());
             transRepo.addList(bond.getId());
             return Responce.build(2202, bond);
         } else {

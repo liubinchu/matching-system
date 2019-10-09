@@ -1,62 +1,40 @@
 package top.erricliu.huatai.matchingsystem.entity.transaction;
 
+import com.google.gson.Gson;
 import lombok.Data;
+import top.erricliu.huatai.matchingsystem.Util.GsonUtil;
 
 import java.sql.Timestamp;
 
 /**
  * @author liubi
- * @date 2019-10-08 11:00
+ * @date 2019-10-09 08:13
  **/
 @Data
 public class Transaction {
-    int userId;
-    int boundId;
-    TransType tradeType;
-    // true sale false buy
-    int price;
+    private static Gson gson = GsonUtil.getGson();
+
+    int buyerId;
+    int sellerId;
+    int bondId;
     int quantity;
-    Timestamp initTime;
-    // 初始创建时间
+    int dealingPrice;
+    Timestamp timestamp;
 
-    Timestamp currentTime;
-    // 部分交易后, 剩余创建交易时间
-
-    public Transaction(int userId, int boundId, TransType tradeType, int price, int quantity) {
-        this.userId = userId;
-        this.boundId = boundId;
-        this.tradeType = tradeType;
-        this.price = price;
+    public Transaction(int buyerId, int sellerId, int bondId, int quantity, int dealingPrice) {
+        this.buyerId = buyerId;
+        this.sellerId = sellerId;
+        this.bondId = bondId;
         this.quantity = quantity;
-        this.initTime = new java.sql.Timestamp(System.currentTimeMillis());
-        this.currentTime = initTime;
+        this.dealingPrice = dealingPrice;
+        this.timestamp = new java.sql.Timestamp(System.currentTimeMillis());
     }
 
-    public Transaction(int userId, int boundId, TransType tradeType, int price, int quantity, Timestamp initTime, Timestamp currentTime) {
-        this.userId = userId;
-        this.boundId = boundId;
-        this.tradeType = tradeType;
-        this.price = price;
-        this.quantity = quantity;
-        this.initTime = initTime;
-        this.currentTime = currentTime;
+    public String toJson() {
+        return gson.toJson(this);
     }
 
-    public Transaction remainTrans(int quantity) {
-        return new Transaction(this.userId, this.boundId, this.tradeType, this.price, this.quantity - quantity,
-                this.initTime, new java.sql.Timestamp(System.currentTimeMillis()));
-    }
-
-    public Transaction trade(int quantity) {
-        this.quantity -= quantity;
-        this.currentTime = new java.sql.Timestamp(System.currentTimeMillis());
-        return this;
-    }
-
-
-    public static void main(String[] args) {
-        BuyTransaction transaction1 = new BuyTransaction(0, 0, 10, 10);
-        BuyTransaction transaction2 = new BuyTransaction(0, 0, 20, 10);
-        System.out.println(transaction1.compareTo(transaction2));
+    public Transaction fromJson(String data) {
+        return gson.fromJson(data, Transaction.class);
     }
 }

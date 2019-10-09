@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.erricliu.huatai.matchingsystem.entity.Responce;
 import top.erricliu.huatai.matchingsystem.entity.User;
-import top.erricliu.huatai.matchingsystem.entity.transaction.BuyTransaction;
-import top.erricliu.huatai.matchingsystem.entity.transaction.SaleTransaction;
-import top.erricliu.huatai.matchingsystem.entity.transaction.TransType;
-import top.erricliu.huatai.matchingsystem.entity.transaction.Transaction;
+import top.erricliu.huatai.matchingsystem.entity.transaction.Bill;
+import top.erricliu.huatai.matchingsystem.entity.transaction.BillType;
+import top.erricliu.huatai.matchingsystem.entity.transaction.BuyBill;
+import top.erricliu.huatai.matchingsystem.entity.transaction.SaleBill;
 import top.erricliu.huatai.matchingsystem.repo.BondRepo;
 import top.erricliu.huatai.matchingsystem.repo.TransRepo;
 import top.erricliu.huatai.matchingsystem.repo.UserRepo;
@@ -29,9 +29,11 @@ public class TransactionService {
     private UserRepo userRepo;
     @Autowired
     private TransRepo transRepo;
+    @Autowired
+    private MatchingService matchingService;
 
 
-    public Responce transaction(Map<String, Object> buyBody, TransType transType) {
+    public Responce transaction(Map<String, Object> buyBody, BillType billType) {
         if (!preCheckService.checkBody(buyBody)) {
             return Responce.build(4101, buyBody);
         }
@@ -46,14 +48,14 @@ public class TransactionService {
         if (!preCheckService.existBond(bondId)) {
             return Responce.build(4103, bondId);
         }
-        if (transType.equals(TransType.SALE)) {
+        if (billType.equals(BillType.SALE)) {
             if (!preCheckService.userHavingBond(userId, bondId)) {
                 return Responce.build(4103, bondId);
             }
         }
         User user = userRepo.get(userId);
         // 冻结操作
-        if (transType.equals(TransType.BUY)) {
+        if (billType.equals(BillType.BUY)) {
             //买交易只冻结金钱，债券不足时等待交易
             if (!user.freezeMoney(quantity * price)) {
                 return Responce.build(4104, new int[]{userId, quantity * price});
@@ -67,21 +69,17 @@ public class TransactionService {
 
 
         // 生成交易
-        Transaction transaction;
-        if (transType.equals(TransType.BUY)) {
-            transaction = new BuyTransaction(userId, bondId, price, quantity);
-            //transRepo.getBuyList(bondId).offerTransaction(transaction);
+        Bill bill;
+        if (billType.equals(BillType.BUY)) {
+            bill = new BuyBill(userId, bondId, price, quantity);
         } else {
-            transaction = new SaleTransaction(userId, bondId, price, quantity);
-            //transRepo.getSaleList(bondId).offerTransaction(transaction);
+            bill = new SaleBill(userId, bondId, price, quantity);
         }
-
-
-        if (transType.equals(TransType.BUY)) {
+        matchingService.activate(bill);
+        if (billType.equals(BillType.BUY)) {
             return Responce.build(2101, null);
         } else {
             return Responce.build(2102, null);
         }
-
     }
 }

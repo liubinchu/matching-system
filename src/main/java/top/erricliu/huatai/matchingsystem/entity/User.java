@@ -53,6 +53,15 @@ public class User implements Comparable {
         return this;
     }
 
+    public synchronized User addBond(int bondId, int quantity) {
+        if (this.bonds.containsKey(bondId)) {
+            this.bonds.get(bondId).aliveQuantity += quantity;
+        } else {
+            this.bonds.put(bondId, new UserBond(bondId, quantity));
+        }
+        return this;
+    }
+
     public synchronized User sale(int bondId, int quantity, int price) {
         this.bonds.get(bondId).frozenQuantity -= quantity;
         if (this.bonds.get(bondId).getQuantity() == 0) {
