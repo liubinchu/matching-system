@@ -2,6 +2,7 @@ package top.erricliu.huatai.matchingsystem.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import top.erricliu.huatai.matchingsystem.entity.User;
 import top.erricliu.huatai.matchingsystem.entity.billList.BuyBillList;
@@ -25,8 +26,24 @@ public class ClearingService {
     private BillRepo billRepo;
     @Autowired
     private UserRepo userRepo;
+
     @Autowired
-    private EnduranceService enduranceService;
+    private StringRedisTemplate redisTemplate;
+
+    public void sendMessageAndSave(String info) {
+        try {
+            redisTemplate.opsForList().rightPush("ClearingInfoCache",info);
+            redisTemplate.convertAndSend("ClearingInfo", info);
+            log.info("发送mq消息" + info+"成功");
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("发送mq消息" + info+"失败");
+
+        }
+    }
+
 
     public synchronized void clearBuy(BuyBill buyBill, SaleBillList saleList, Object[] pricing) {
         // t1 未加入repo ,t2 已经加入repo
@@ -49,7 +66,8 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
-        enduranceService.putClearingInfo(transaction.toJson());
+        sendMessageAndSave(transaction.toJson());
+
     }
 
 
@@ -76,7 +94,8 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), (int)pricing[1], (int)pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
-		enduranceService.putClearingInfo(transaction.toJson());
+        sendMessageAndSave(transaction.toJson());
+
 
     }
 
