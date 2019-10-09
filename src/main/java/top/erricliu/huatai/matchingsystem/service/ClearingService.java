@@ -25,6 +25,8 @@ public class ClearingService {
     private BillRepo billRepo;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private EnduranceService enduranceService;
 
     public synchronized void clearBuy(BuyBill buyBill, SaleBillList saleList, int[] pricing) {
         // t1 未加入repo ,t2 已经加入repo
@@ -46,6 +48,7 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), pricing[1], pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
+        enduranceService.putClearingInfo(transaction.toJson());
     }
 
     public synchronized void clearSale(SaleBill saleBill, BuyBillList buyList, int[] pricing) {
@@ -68,6 +71,7 @@ public class ClearingService {
         seller.sale(saleBill.getBoundId(), pricing[1], pricing[0]);
         //log
         log.info("transaction deal:" + transaction.toJson());
+        enduranceService.putClearingInfo(transaction.toJson());
     }
 
 
